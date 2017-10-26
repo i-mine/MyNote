@@ -3,7 +3,7 @@ title: 2017-10-26 Scala学习之Future
 tags: scala,Future
 grammar_cjkRuby: true
 ---
-
+http://blog.csdn.net/thomassuns/article/details/38368583
 
 作为一个上进且充满激情的Scala开发者，你会愿意知道Scala在并行处理方面的成就，或者你正是被这吸引到Scala世界来的呢。Scala让你可以更容易的写出健壮的并行程序而无需像其它语言一样和低阶API打交道。
 Scala在这方面的成就来自于两个方面，Future和Actor。前者正是本篇要涉及的内容，我会介绍future的优势以及如何以函数式的方式来使用它。
