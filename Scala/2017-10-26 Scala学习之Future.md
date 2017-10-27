@@ -11,27 +11,42 @@ Scala在这方面的成就来自于两个方面，Future和Actor。前者正是�
 为什么串行代码会比较糟糕
 
 假设你要弄杯卡普奇诺喝喝。你可以顺序依次执行下述操作：
-磨咖啡豆
-烧热水
-用热水蒸煮磨好的咖啡
-给牛奶打泡
-将蒸馏好的咖啡和打泡牛奶混合
+* 磨咖啡豆
+* 烧热水
+* 用热水蒸煮磨好的咖啡
+* 给牛奶打泡
+* 将蒸馏好的咖啡和打泡牛奶混合
+
 翻译成Scala代码，会是下面的样子：
-[java] view plain copy
+
+```scala
 import scala.util.Try  
-// Some type aliases, just for getting more meaningful method signatures:  
-type CoffeeBeans = String  
-type GroundCoffee = String  
+// Some type aliases, just for getting more meaningful method signatures: 
+//咖啡豆
+type CoffeeBeans = String
+//磨好的咖啡
+type GroundCoffee = String
+//水
 case class Water(temperature: Int)  
+//牛奶
 type Milk = String  
+//打泡牛奶
 type FrothedMilk = String  
+//浓咖啡
 type Espresso = String  
+//卡布奇诺
 type Cappuccino = String  
 // dummy implementations of the individual steps:  
+// 单个步骤的虚拟实现
+//磨豆子
 def grind(beans: CoffeeBeans): GroundCoffee = s"ground coffee of $beans"  
+//加热
 def heatWater(water: Water): Water = water.copy(temperature = 85)  
+//牛奶打泡
 def frothMilk(milk: Milk): FrothedMilk = s"frothed $milk"  
+//冲泡
 def brew(coffee: GroundCoffee, heatedWater: Water): Espresso = "espresso"  
+//
 def combine(espresso: Espresso, frothedMilk: FrothedMilk): Cappuccino = "cappuccino"  
 // some exceptions for things that might go wrong in the individual steps  
 // (we'll need some of them later, use the others when experimenting  
@@ -46,7 +61,8 @@ def prepareCappuccino(): Try[Cappuccino] = for {
   water <- Try(heatWater(Water(25)))  
   espresso <- Try(brew(ground, water))  
   foam <- Try(frothMilk("milk"))  
-} yield combine(espresso, foam)  
+} yield combine(espresso, foam)
+```
 
 
 这样做有几个好处：你有了一个按步执行的指南。进一步讲，你不会被搞混，因为没有了上下文切换。
