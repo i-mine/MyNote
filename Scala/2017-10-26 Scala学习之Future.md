@@ -46,7 +46,7 @@ def heatWater(water: Water): Water = water.copy(temperature = 85)
 def frothMilk(milk: Milk): FrothedMilk = s"frothed $milk"  
 //冲泡
 def brew(coffee: GroundCoffee, heatedWater: Water): Espresso = "espresso"  
-//
+//混合
 def combine(espresso: Espresso, frothedMilk: FrothedMilk): Cappuccino = "cappuccino"  
 // some exceptions for things that might go wrong in the individual steps  
 // (we'll need some of them later, use the others when experimenting  
@@ -60,6 +60,7 @@ def prepareCappuccino(): Try[Cappuccino] = for {
   ground <- Try(grind("arabica beans"))  
   water <- Try(heatWater(Water(25)))  
   espresso <- Try(brew(ground, water))  
+ //泡沫 
   foam <- Try(frothMilk("milk"))  
 } yield combine(espresso, foam)
 ```
@@ -81,7 +82,7 @@ Future是一个一次写容器：当一个future完成时，它就不可变了�
 使用Futures
 
 Scala的Future有几种用法，我将通过用Future来改造前面的煮咖啡的代码来一一解释。首先我们要重写那些可以并行执行的函数，让它们立刻返回Future而不是阻塞时的执行：
-[java] view plain copy
+```scala
 import scala.concurrent.future  
 import scala.concurrent.Future  
 import scala.concurrent.ExecutionContext.Implicits.global  
@@ -116,53 +117,55 @@ def brew(coffee: GroundCoffee, heatedWater: Water): Future[Espresso] = Future {
   println("it's brewed!")  
   "espresso"  
 }  
- 
+ ```
 有几个地方需要先解释一下。
 首先，Future的联合对象有一个apply方法，这方法需要两个参数：
  
-[java] view plain copy
+```scala
 object Future {  
   def apply[T](body: => T)(implicit execctx: ExecutionContext): Future[T]  
 }  
-
+```
  
 异步执行的代码以by-name方式赋给body参数。第二个参数是一个隐式参数，意味着如果作用范围内有有匹配的隐式常量存在，我们就无需提供此参数，我们通过导入全局执行环境引入了一个隐式常量。
 ExecutionContext是一个可以运行Future的环境，你可以把它当做是类似线程池的东西。因为ExecutionContext是一个隐式常量，所以我们只需要为前个单参数列表赋值。单参数列表可以不用括号而用大括号来包含，大家通常都会这样来调用future方法，这让它看上去更像是在使用语言的特性而不是一般的函数调用。ExecutionContext是所有FutureAPI的隐式常量。
 进一步，我们在这个简单的例子里不用做任何的计算，所以用随机休眠来模拟实际计算花费的时间。我们在“计算”前后分别打印出信息，以清楚的表达代码中的不确定和并行特性。
 Future返回的计算结果将会在Future被创建（通过ExecutionContext管理的线程）后的一个不确定时间出现。
+
 回调
 
 有时候，在简单场景下，用回调可以更方便。Future的回调函数是偏函数。你可以把一个回调函数传递给onSuccess方法，它仅在Future被成功执行时才调用，计算结果将会传递给回调函数：
- 
-[java] view plain copy
+```scala 
 grind("arabica beans").onSuccess { case ground =>  
-  println("okay, got my ground coffee")  
+  println("okay, got my ground coffee")  r
 }  
-
+```
 同样的，你可以用onFailure方法来注册一个失败情况的回调函数。回调函数需要接收Throwable参数，只有当Future不能被成功执行时才会调用回调函数。
 通常，更好的做法是同时为成功和失败定义两个回调函数，回调函数接收的参数是Try类型：
-[java] view plain copy
+```scala
 import scala.util.{Success, Failure}  
 grind("baked beans").onComplete {  
   case Success(ground) => println(s"got my $ground")  
   case Failure(ex) => println("This grinder needs a replacement, seriously!")  
 }  
+```
 上面例子中的graind就有可能抛出异常，这就会导致Future以失败的状态完成。
+
 组合Futures
 
 当你需要嵌套回调函数时就会比较痛苦了。幸运的是，你不需要那样做。Scala的future真正强大的地方是它们可以被组合。
 如果你看过本系列的前几篇，你可能已经注意到所有我们讨论过的容器类型都可以让你对它们做map和flatmap操作，或者在for语句中使用它们，我前面提到Future也是一个容器类型，因而Future也可以让你那样做应该没有什么惊奇的吧。
 真正的问题是：对一些实际尚未完成的计算执行这些操作意味着什么？
+
 对Future进行Map
 
 你是否总是想成为一个时间旅行者去未来看看？一个Scala开发者就可以！假设你在烧水的过程中想要检查水温是否已经合适了，你可以通过将Future[Water]map成Future[Boolean]来做到：
- 
-[java] view plain copy
+```scala 
 val temperatureOkay: Future[Boolean] = heatWater(Water(25)).map { water =>  
   println("we're in the future!")  
   (80 to 85).contains(water.temperature)  
 }  
-
+```
  
 赋给temperatureOkay的Future[Boolean]最终将会包含一个成功计算的boolean值。 试着修改一下heatWater的实现，让它抛出异常（比如你的水壶爆掉了啥的），再来观察你会发现 we're in the future 永远不会输出。
 当你写传递给map的函数时，你实际上处在未来或者可能处在未来。一旦Future[Water]实例被成功执行完成时，map函数就会马上被执行，这个事件发生的时间可能不是当下。如果Future[Water]执行失败，你传递给map的函数将不会被调用。相反，map将会返回一个包含着Failure的Future[Boolean]。
@@ -170,32 +173,32 @@ val temperatureOkay: Future[Boolean] = heatWater(Water(25)).map { water =>
 
 如果一个Future的计算依赖于另一个Future的结果，你会需要flatMap来防止Future的多重嵌套。
 例如，假设测量水温需要些时间，所以我们也要让判断水温是否合适的操作异步化。你有一个函数传入Water的实例，并返回一个Future[Boolean]:
- 
-[java] view plain copy
+```scala 
 def temperatureOkay(water: Water): Future[Boolean] = Future {  
   (80 to 85).contains(water.temperature)  
 }  
-
- 
+```
 用flatMap而不是map以便得到一个Future[Boolean]而不是Future[Future[Boolean]]：
-[java] view plain copy
+```scala
 val nestedFuture: Future[Future[Boolean]] = heatWater(Water(25)).map {  
   water => temperatureOkay(water)  
 }  
 val flatFuture: Future[Boolean] = heatWater(Water(25)).flatMap {  
   water => temperatureOkay(water)  
 }  
+```
 同样的，map方法仅在Future[Water]实例成功完成后才被调用。
 For语句
 
-除了调用flatMap，你还可以用for语句来达到同样目的，当时代码可读性更好。上面的例子就可以这样来写：
-[java] view plain copy
+除了调用flatMap，你还可以用for语句来达到同样目的，但是代码可读性更好。上面的例子就可以这样来写：
+```scala
 val acceptable:Future[Boolean]=for{  
 heatedWater <- heatWater(Water(25))  
 okay <- temperatureOkay(heatedWater)  
-}yield okay  
+}yield okay
+```
 当你有多个需要同时进行的计算时，你需要小心了，因为你已经在for语句之外生成了一个新的Future实例。
-[java] view plain copy
+```scala
 def prepareCappuccinoSequentially(): Future[Cappuccino] = {  
   for {  
     ground <- grind("arabica beans")  
@@ -204,9 +207,10 @@ def prepareCappuccinoSequentially(): Future[Cappuccino] = {
     espresso <- brew(ground, water)  
   } yield combine(espresso, foam)  
 }  
+```
 这看上去挺好，不过因为for语句不过是flatMap的另一种表达方式，所以flatMap的调用机制也同样适用，也就是说heatWater生成Future[Water]的语句仅当Future[GroundCoffee]被成功完成时才会被实例化。你可以通过观察函数输出来验证。
 因而，你应该在for语句前实例化所有的独立的Future：
-[java] view plain copy
+```scala
 def prepareCappuccino(): Future[Cappuccino] = {  
   val groundCoffee = grind("arabica beans")  
   val heatedWater = heatWater(Water(20))  
@@ -218,8 +222,19 @@ def prepareCappuccino(): Future[Cappuccino] = {
     espresso <- brew(ground, water)  
   } yield combine(espresso, foam)  
 }  
+```
 现在在for语句开始前我们实例化了三个Future，它们立刻开始同时执行。如果你观察输出，你会看到无序的输出。唯一可以确定的就是“happy brewing“会在最后输出，因为所调用的方法需要来自另外两个Future的返回值，只有另外两个Future被成功完成时才有这两个值。
+
+==注意 #800f00==：整个流程最后的结果是在Future[Cappuccino]中的，因此要对该Future进行阻塞，等待前面结果的的产生。
+```scala
+val prepare = prepareCappuccino()
+    prepare.onComplete{
+      case Success(prepare) =>println(s"oh!,great $prepare")
+      case Failure(ex) =>throw  new RuntimeException("no coffee")
+    }
+    val result = Await.result(prepare,Duration.Inf)
+```
+
 失败投影
 
-你应该已经注意到，Future[T]是偏向成功的，这让你可以使用map, flatMap,filter等，都是基于它会被成功完成的前提的。有时候，你想以优雅的函数的方式来处理未来的失败。你可以呼叫Future[T]的failed方法来得到它的失败投影，即Future[Throwable]。现在你可以对Future[Throwable]执行例如map操作，map函数只有当Future[T]失败完成时才被调用。
-预告
+你应该已经注意到，Future[T]是偏向成功的，这让你可以使用`map`, `flatMap`,`filter`等，`都是基于它会被成功完成的前提的`。有时候，你想以优雅的函数的方式来处理未来的失败。你可以呼叫Future[T]的failed方法来得到它的失败投影，即Future[Throwable]。现在你可以对Future[Throwable]执行例如map操作，map函数只有当Future[T]失败完成时才被调用。
