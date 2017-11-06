@@ -1,0 +1,24 @@
+---
+title: 2017-11-6 Dr.elephant部署步骤 
+tags: mobvista,drelephant
+grammar_cjkRuby: true
+---
+
+* 清空`app-conf/elephant.conf`中配置对应的数据库
+```shell
+db_url=""
+db_name=drelephant
+db_user=dataplatform
+db_password=""
+```
+* 执行./compile.sh complie.conf
+* 生成dist目录，将zip压缩文件上传到线上，解压
+* 解压之后，进入`bin`目录，执行./start.sh ../app-conf
+* 结束可直接执行./stop.sh
+* 代码正常执行的状态会打印到项目根目录的dr.log
+* 代码内部的log会打印到项目上一级目录的log目录下
+
+bugfix:
+1. dashbord正常显示
+2. 多线程逻辑保证正常
+3. spark 兼容2.0.1
