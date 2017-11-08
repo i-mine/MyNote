@@ -30,8 +30,25 @@ bugfix:
 		* final确实阻止了新建的生成器对象中没有自己的retryQueue,但去掉final仍不能解决问题。
 	* MapReduceFetcher中的historyaddr会被上一个使用过它的集群线程所更改，当多个集群并发调用，就会爆发线程安全问题，historyaddr会被频繁的更改。
 		* 将Fetcher公用的变量放入到方法内部，转换为局部变量。
+	* DB Connection提前关闭，排除数据库连接时间超时，需要去寻找Ebean对数据库连接的管理。//TODO
+	
 	
 3. spark 兼容2.0.1
+	spark日志文件路径：
+	
+	mob_m_online:  webhdfs://ip-172-31-29-202.ec2.internal:50070/var/log/spark/apps/
+	mob_emr_online_autoscaling: webhdfs://:ip-172-31-31-107.ec2.internal:50070/var/log/spark/apps/
+	webhdfs://ip-172-31-30-48.ec2.internal:50070/var/log/spark/apps/
+	webhdfs://ip-172-31-26-99.ec2.internal:50070/var/log/spark/apps/
+	webhdfs://ip-172-31-30-45.ec2.internal:50070/var/log/spark/apps/
+	
+	webhdfs://ip-172-31-27-152.ec2.internal:50070/var/log/spark/apps/
+	webhdfs://ip-172-31-27-152.ec2.internal:50070/var/log/spark/apps/
+	webhdfs://ip-172-31-27-152.ec2.internal:50070/var/log/spark/apps/
+	webhdfs://ip-172-31-27-152.ec2.internal:50070/var/log/spark/apps/
+	webhdfs://ip-172-31-27-152.ec2.internal:50070/var/log/spark/apps/
+	webhdfs://ip-172-31-27-152.ec2.internal:50070/var/log/spark/apps/
+	根据不同的日志后缀进行处理。//TODO
 4. 添加search查询表单的ClusterName的查询选项
 
 
