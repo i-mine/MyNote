@@ -36,21 +36,50 @@ bugfix:
 3. spark 兼容2.0.1
 	spark日志文件路径：
 	
-	mob_m_online:  webhdfs://ip-172-31-29-202.ec2.internal:50070/var/log/spark/apps/
-	mob_emr_online_autoscaling: webhdfs://:ip-172-31-31-107.ec2.internal:50070/var/log/spark/apps/
-	webhdfs://ip-172-31-30-48.ec2.internal:50070/var/log/spark/apps/
-	webhdfs://ip-172-31-26-99.ec2.internal:50070/var/log/spark/apps/
-	webhdfs://ip-172-31-30-45.ec2.internal:50070/var/log/spark/apps/
-	
-	webhdfs://ip-172-31-27-152.ec2.internal:50070/var/log/spark/apps/
-	webhdfs://ip-172-31-27-152.ec2.internal:50070/var/log/spark/apps/
-	webhdfs://ip-172-31-27-152.ec2.internal:50070/var/log/spark/apps/
-	webhdfs://ip-172-31-27-152.ec2.internal:50070/var/log/spark/apps/
-	webhdfs://ip-172-31-27-152.ec2.internal:50070/var/log/spark/apps/
-	webhdfs://ip-172-31-27-152.ec2.internal:50070/var/log/spark/apps/
-	根据不同的日志后缀进行处理。//TODO
+	mob_m_online:                           webhdfs://ip-172-31-29-202.ec2.internal:50070/var/log/spark/apps/
+	mob_emr_online_autoscaling:   webhdfs://ip-172-31-31-107.ec2.internal:50070/var/log/spark/apps/
+	mob_emr_offline:                       wehdfs://ip-172-31-30-48.ec2.internal:50070/var/log/spark/apps/
+	wayio:                                         webhdfs://ip-172-31-26-99.ec2.internal:50070/var/log/spark/apps/
+	mob_3s_online:	                        webhdfs://ip-172-31-30-45.ec2.internal:50070/var/log/spark/apps/
+	mob_emr_online_spark_2.0.0:	 webhdfs://ip-172-31-8-98.ec2.internal:50070/var/log/spark/apps/
+	mob_3s_offline:	                         webhdfs://ip-172-31-29-42.ec2.internal:50070/var/log/spark/apps/
+	mob_data_offline:	                    webhdfs://ip-172-31-27-152.ec2.internal:50070/var/log/spark/apps/
+	mob_analyse_offline: 	             webhdfs://ip-172-31-18-92.ec2.internal:50070/var/log/spark/apps/
+	mob_m_offline:	                        webhdfs://ip-172-31-16-216.ec2.internal:50070/var/log/spark/apps/
+	dr.elephant FSFetcher会对有attempt 和 codec的文件，自动拼接新的路径，并获取Codec,去处理指定的压缩文件流
+	目前无法读取新产出的日志文件，原因：permission denied
+	日志限制块大小：500MB
 4. 添加search查询表单的ClusterName的查询选项
 
+反复测试发现每次对相同的Application ，出现SQL异常
+mob_analyse_offline
+application_1500623177035_19940
+application_1500623177035_19941
+application_1500623177035_19942
+application_1500623177035_19734
+application_1500623177035_19735
+
+mob_emr_online_autoscaling:
+application_1496798446986_1191012
+application_1496798446986_1191010
+application_1496798446986_1191015
+application_1496798446986_1191019
+application_1496798446986_1191006
+application_1496798446986_1191004
+application_1496798446986_1191003
+
+application_1496798446986_1190997
+application_1496798446986_1190976
+application_1496798446986_1190968
+application_1496798446986_1190982
+application_1496798446986_1190987
+application_1496798446986_1190985
+application_1496798446986_1190964
+application_1496798446986_1190962
+application_1496798446986_1190968
+ 
+ SQL State = HY000  数据插入异常
+<logger name="org.avaje.ebean.SQL" level="TRACE" />
 
 
 
