@@ -49,6 +49,7 @@ bugfix:
 	dr.elephant FSFetcher会对有attempt 和 codec的文件，自动拼接新的路径，并获取Codec,去处理指定的压缩文件流
 	目前无法读取新产出的日志文件，原因：permission denied
 	日志限制块大小：500MB
+	bugfix:切换到hadoop用户下执行
 4. 添加search查询表单的ClusterName的查询选项
 
 反复测试发现每次对相同的Application ，出现SQL异常
@@ -80,6 +81,8 @@ application_1496798446986_1190968
  
  SQL State = HY000  数据插入异常
 <logger name="org.avaje.ebean.SQL" level="TRACE" />
+ebean log打印SQL
+bugfix：每个建表语句后添加ENGINE=InnoDB DEFAULT CHARSET=UTF8修复问题
 
 
 
