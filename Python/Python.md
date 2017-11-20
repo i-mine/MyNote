@@ -17,11 +17,11 @@ sudo update-alternatives --config python
 
 ## Python入门
 
-输出：print '字符串1','字符串2'
+输出：print('字符串1','字符串2')
 
 输出结果: 字符串1 字符串2  //中间通过空格衔接
 
-输入：name = raw_input()
+输入：name = input()
 
 输入任意字符，name就被赋值
 
@@ -329,12 +329,12 @@ print sum
 
 在循环内部变量`n`不断自减，直到变为`-1`时，不再满足while条件，循环退出。
 
-### 再议raw_input
+### 再议input
 
-最后看一个有问题的条件判断。很多同学会用`raw_input()`读取用户的输入，这样可以自己输入，程序运行得更有意思：
+最后看一个有问题的条件判断。很多同学会用`input()`读取用户的输入，这样可以自己输入，程序运行得更有意思：
 
 ```
-birth = raw_input('birth: ')
+birth = input('birth: ')
 if birth < 2000:
     print '00前'
 else:
@@ -356,10 +356,10 @@ True
 
 ```
 
-原因找到了！原来从`raw_input()`读取的内容永远以字符串的形式返回，把字符串和整数比较就不会得到期待的结果，必须先用`int()`把字符串转换为我们想要的整型：
+原因找到了！原来从`input()`读取的内容永远以字符串的形式返回，把字符串和整数比较就不会得到期待的结果，必须先用`int()`把字符串转换为我们想要的整型：
 
 ```
-birth = int(raw_input('birth: '))
+birth = int(input('birth: '))
 
 ```
 
@@ -449,32 +449,38 @@ print r
 
 ### Python函数的参数
 
-在Python中定义函数，可以用必选参数、默认参数、可变参数和关键字参数，这4种参数都可以一起使用，或者只用其中某些，但是请注意，参数定义的顺序必须是：必选参数、默认参数、可变参数和关键字参数。
+在Python中定义函数，可以用必选参数、默认参数、可变参数和关键字参数，命名关键字参数这5种参数都可以一起使用，或者只用其中某些，但是请注意，参数定义的顺序必须是：必选参数、默认参数、可变参数、命名关键字参数和关键字参数。
 
 比如定义一个函数，包含上述4种参数：
 
-```
-def func(a, b, c=0, *args, **kw):
+```python
+def f1(a, b, c=0, *args, **kw):
     print 'a =', a, 'b =', b, 'c =', c, 'args =', args, 'kw =', kw
+	
+def f2(a, b, c=0, *, d, **kw):
+    print('a =', a, 'b =', b, 'c =', c, 'd =', d, 'kw =', kw)
+
 
 ```
 
 在函数调用的时候，Python解释器自动按照参数位置和参数名把对应的参数传进去。
 
-```
->>> func(1, 2)
+```python 
+>>> f1(1, 2)
 a = 1 b = 2 c = 0 args = () kw = {}
->>> func(1, 2, c=3)
+>>> f1(1, 2, c=3)
 a = 1 b = 2 c = 3 args = () kw = {}
->>> func(1, 2, 3, 'a', 'b')
+>>> f1(1, 2, 3, 'a', 'b')
 a = 1 b = 2 c = 3 args = ('a', 'b') kw = {}
->>> func(1, 2, 3, 'a', 'b', x=99)
+>>> f1(1, 2, 3, 'a', 'b', x=99)
 a = 1 b = 2 c = 3 args = ('a', 'b') kw = {'x': 99}
+>>> f2(1, 2, d=99, ext=None)
+a = 1 b = 2 c = 0 d = 99 kw = {'ext': None}
 ```
 
 最神奇的是通过一个tuple和dict，你也可以调用该函数：
 
-```
+```python
 >>> args = (1, 2, 3, 4)
 >>> kw = {'x': 99}
 >>> func(*args, **kw)
@@ -485,6 +491,7 @@ a = 1 b = 2 c = 3 args = (4,) kw = {'x': 99}
 所以，对于任意函数，都可以通过类似`func(*args, **kw)`的形式调用它，无论它的参数是如何定义的。
 
 `**kw`表示把kw这个dict的所有key-value用关键字参数传入到函数的**kw参数，kw将获得一个dict，注意kw获得的dict是一份拷贝，对kw的改动不会影响到函数外的参数本身。
+
 
 ### 小结
 
@@ -505,71 +512,12 @@ Python的函数具有非常灵活的参数形态，既可以实现简单的调�
 关键字参数既可以直接传入：`func(a=1, b=2)`，又可以先组装dict，再通过`**kw`传入：`func(**{'a': 1, 'b': 2})`。
 
 使用`*args`和`**kw`是Python的习惯写法，当然也可以用其他参数名，但最好使用习惯用法。
+命名的关键字参数是为了限制调用者可以传入的参数名，同时可以提供默认值。
 
-### 命名关键字参数
+定义命名的关键字参数在没有可变参数的情况下不要忘了写分隔符*，否则定义的将是位置参数。
 
-对于关键字参数，函数的调用者可以传入任意不受限制的关键字参数。至于到底传入了哪些，就需要在函数内部通过kw检查。
 
-仍以person()函数为例，我们希望检查是否有city和job参数：
-```
-def person(name, age, **kw):
-    if 'city' in kw:
-        # 有city参数
-        pass
-    if 'job' in kw:
-        # 有job参数
-        pass
-    print('name:', name, 'age:', age, 'other:', kw)
-```
-但是调用者仍可以传入不受限制的关键字参数：
-```
->>> person('Jack', 24, city='Beijing', addr='Chaoyang', zipcode=123456)
-```
-==如果要限制关键字参数的名字，就可以用命名关键字参数，例如，只接收city和job作为关键字参数。==
 
-这种方式定义的函数如下：
-```
-def person(name, age, *, city, job):
-    print(name, age, city, job)
-```
-和关键字参数**kw不同，命名关键字参数需要一个特殊分隔符`*`，`*`后面的参数被视为==命名关键字参数==。
-
-调用方式如下：
-```
->>> person('Jack', 24, city='Beijing', job='Engineer')
-Jack 24 Beijing Engineer
-```
-如果函数定义中已经有了一个可变参数，后面跟着的命名关键字参数就不再需要一个特殊分隔符*了：
-```
-def person(name, age, *args, city, job):
-    print(name, age, args, city, job)
-```	
-==命名关键字参数必须传入参数名==，这和位置参数不同。如果没有传入参数名，调用将报错：
-```
->>> person('Jack', 24, 'Beijing', 'Engineer')
-Traceback (most recent call last):
-  File "<stdin>", line 1, in <module>
-TypeError: person() takes 2 positional arguments but 4 were given
-```
-由于调用时缺少参数名city和job，Python解释器把这4个参数均视为位置参数，但person()函数仅接受2个位置参数。
-
-命名关键字参数可以有缺省值，从而简化调用：
-```
-def person(name, age, *, city='Beijing', job):
-    print(name, age, city, job)
-```
-由于命名关键字参数city具有默认值，调用时，可不传入city参数：
-
-```
->>> person('Jack', 24, job='Engineer')
-Jack 24 Beijing Engineer
-```
-使用命名关键字参数时，要特别注意，如果没有`可变参数`，就必须加一个`*`作为特殊分隔符。如果缺少`*`，Python解释器将无法识别位置参数和命名关键字参数：
-```
-def person(name, age, city, job):
-    # 缺少 *，city和job被视为位置参数
-    pass
-```
 ## 高级特性
 
 ### 切片
@@ -688,7 +636,7 @@ b
 
 因为dict的存储不是按照list的方式顺序排列，所以，迭代出的结果顺序很可能不一样。
 
-默认情况下，dict迭代的是key。如果要迭代value，可以用`for value in d.itervalues()`，如果要同时迭代key和value，可以用`for k, v in d.iteritems()`。
+默认情况下，dict迭代的是key。如果要迭代value，可以用`for value in d.values()`，如果要同时迭代key和value，可以用`for k, v in d.items()`。
 
 由于字符串也是可迭代对象，因此，也可以作用于`for`循环：
 
@@ -778,11 +726,11 @@ for循环后面还可以加上if判断，这样我们就可以筛选出仅偶数
 ['AX', 'AY', 'AZ', 'BX', 'BY', 'BZ', 'CX', 'CY', 'CZ']
 ```
 
-`for`循环其实可以同时使用两个甚至多个变量，比如`dict`的`iteritems()`可以同时迭代key和value：
+`for`循环其实可以同时使用两个甚至多个变量，比如`dict`的`items()`可以同时迭代key和value：
 
 ```python
 >>> d = {'x': 'A', 'y': 'B', 'z': 'C' }
->>> for k, v in d.iteritems():
+>>> for k, v in d.items():
 ...     print k, '=', v
 ... 
 y = B
@@ -794,7 +742,7 @@ z = C
 
 ```pyhton
 >>> d = {'x': 'A', 'y': 'B', 'z': 'C' }
->>> [k + '=' + v for k, v in d.iteritems()]
+>>> [k + '=' + v for k, v in d.items()]
 ['y=B', 'x=A', 'z=C']
 ```
 
@@ -830,7 +778,7 @@ z = C
 
 要创建一个generator，有很多种方法。第一种方法很简单，只要把一个列表生成式的`[]`改成`()`，就创建了一个generator：
 
-```
+```python
 >>> L = [x * x for x in range(10)]
 >>> L
 [0, 1, 4, 9, 16, 25, 36, 49, 64, 81]
@@ -846,28 +794,28 @@ z = C
 
 如果要一个一个打印出来，可以通过generator的`next()`方法：
 
-```
->>> g.next()
+```python
+>>> next(g)
 0
->>> g.next()
+>>> next(g)
 1
->>> g.next()
+>>> next(g)
 4
->>> g.next()
+>>> next(g)
 9
->>> g.next()
+>>> next(g)
 16
->>> g.next()
+>>> next(g)
 25
->>> g.next()
+>>> next(g)
 36
->>> g.next()
+>>> next(g)
 49
->>> g.next()
+>>> next(g)
 64
->>> g.next()
+>>> next(g)
 81
->>> g.next()
+>>> next(g)
 Traceback (most recent call last):
   File "<stdin>", line 1, in <module>
 StopIteration
@@ -878,7 +826,7 @@ StopIteration
 
 当然，上面这种不断调用`next()`方法实在是太变态了，正确的方法是使用`for`循环，因为generator也是可迭代对象：
 
-```
+```python
 >>> g = (x * x for x in range(10))
 >>> for n in g:
 ...     print n
@@ -906,7 +854,7 @@ generator非常强大。如果推算的算法比较复杂，用类似列表生�
 
 斐波拉契数列用列表生成式写不出来，但是，用函数把它打印出来却很容易：
 
-```
+```python
 def fib(max):
     n, a, b = 0, 0, 1
     while n < max:
@@ -918,7 +866,7 @@ def fib(max):
 
 上面的函数可以输出斐波那契数列的前N个数：
 
-```
+```python
 >>> fib(6)
 1
 1
@@ -933,7 +881,7 @@ def fib(max):
 
 也就是说，上面的函数和generator仅一步之遥。要把`fib`函数变成generator，只需要把`print b`改为`yield b`就可以了：
 
-```
+```python
 def fib(max):
     n, a, b = 0, 0, 1
     while n < max:
@@ -945,7 +893,7 @@ def fib(max):
 
 这就是定义generator的另一种方法。如果一个函数定义中包含`yield`关键字，那么这个函数就不再是一个普通函数，而是一个generator：
 
-```
+```python
 >>> fib(6)
 <generator object fib at 0x104feaaa0>
 
@@ -955,7 +903,7 @@ def fib(max):
 
 举个简单的例子，定义一个generator，依次返回数字1，3，5：
 
-```
+```python
 >>> def odd():
 ...     print 'step 1'
 ...     yield 1
@@ -987,7 +935,7 @@ StopIteration
 
 同样的，把函数改成generator后，我们基本上从来不会用`next()`来调用它，而是直接使用`for`循环来迭代：
 
-```
+```python
 >>> for n in fib(6):
 ...     print n
 ...
@@ -1001,8 +949,10 @@ StopIteration
 
 
 
-小结
+ 小结
 
 generator是非常强大的工具，在Python中，可以简单地把列表生成式改成generator，也可以通过函数实现复杂逻辑的generator。
 
 要理解generator的工作原理，它是在`for`循环的过程中不断计算出下一个元素，并在适当的条件结束`for`循环。对于函数改成的generator来说，遇到return语句或者执行到函数体最后一行语句，就是结束generator的指令，`for`循环随之结束。
+
+### 迭代器
