@@ -650,8 +650,11 @@ ILoginManager <|--[#red] LoginManagerImpl
 
 ```
 
-参考链接:
+Pantuml参考链接:
 https://blog.csdn.net/junhuahouse/article/details/80767632
 https://www.cnblogs.com/Jeson2016/p/6837017.html
 https://design-patterns.readthedocs.io/zh_CN/latest/read_uml.html#id3
 http://plantuml.com/zh/class-diagram
+
+# Memeraid
+未完待续...
