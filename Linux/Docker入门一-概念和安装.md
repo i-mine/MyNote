@@ -1,6 +1,6 @@
 ---
 title: Docker入门一:概念和安装 
-tags: 
+tags: Linux,Docker
 grammar_cjkRuby: true
 ---
 # Docker概念
@@ -129,7 +129,18 @@ sudo curl -L https://github.com/docker/compose/releases/download/1.25.0-rc2/dock
 
 sudo chmod +x /usr/local/bin/docker-compose
 ```
-
+10.更改docker国内镜像源
+修改文件: /etc/docker/daemon.json
+添加如下内容:
+```json
+{
+  "registry-mirrors": ["https://n6syp70m.mirror.aliyuncs.com"]
+}
+```
+修改之后重启docker服务:
+```
+sudo service docker restart
+```
 ### Hello-World
 
 ```bash
