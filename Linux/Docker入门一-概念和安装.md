@@ -1,5 +1,5 @@
 ---
-title: Docker入门一:概念和安装 
+title: Docker入门一概念和安装 
 tags: Linux,Docker
 grammar_cjkRuby: true
 ---
