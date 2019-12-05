@@ -1,5 +1,5 @@
 ---
-title: Docker入门二:容器管理
+title: Docker入门二容器管理
 tags: Linux,Docker
 grammar_cjkRuby: true
 ---
