@@ -4,7 +4,7 @@ tags: Linux,Docker
 grammar_cjkRuby: true
 ---
 time: `2019-12-3 `
-[TOC!]
+[TOC]
 # 容器管理
 ## docker常用命令
 注: 命令中的CONTAINER,可以是conainer_id,也可以是container name
@@ -18,6 +18,13 @@ docker container ls:
   -q 仅显示ID
   -s 显示container的文件大小
 
+``` bash
+# 暂停所有运行中的容器
+ docker container ls -q | xargs docker container stop
+
+# 删除所有的容器
+ docker container ls -aq | xargs docker container rm
+```
 
 ### 快速启动容器
 docker container run 可以快速创建并运行一个容器.
@@ -29,8 +36,10 @@ OPTIONS:
  - `-i`, --interactive
  - `t`,-tty,为终端
  - `--rm`在容器退出后自动移除
- - `-p` 将容器的端口映射到主机
+ - `-p` 将容器的端口映射到主机, `-p 80:80`意思是指将容器的80端口映射到主机的80端口.
  - `-v`指定数据卷
+ - `-d` 以后台模式运行
+ - `--restart=always` 保证容器始终不关闭
 一般会直接用`-it` 就可以在创建container直接访问终端.
 
 常用的小型IMAGE `busybox`
@@ -130,7 +139,7 @@ $ docker container logs -tf container_02
 2019-12-04T02:53:50.016944143Z hello world
 2019-12-04T02:53:52.017360512Z hello world
 ```
-### 容器进程
+### 查看容器进程
 
 ``` bash
 docker container top CONTAINER
