@@ -258,6 +258,13 @@ Centos设置开机自启
 yum install -y epel-release bash-completion && cp /usr/share/bash-completion/completions/docker /etc/bash_completion.d/
 systemctl enable --now docker
 ```
+### 卸载Docker
+
+``` bash
+sudo yum remove docker-ce
+sudo rm -rf /var/lib/docker
+```
+
 ### Deepin 安装Docker
 1. 卸载旧Docker
 `sudo apt-get remove docker.io docker-engine`
