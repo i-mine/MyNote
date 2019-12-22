@@ -70,7 +70,7 @@ kubectl create rolebinding default-admin --clusterrole=admin --serviceaccount=de
 --master k8s://https://47.89.179.140:6443 \
 --deploy-mode cluster \
 --name spark-pi \
---class org.apache.spark.examples.SparkPi \
+--class orgitg.apache.spark.examples.SparkPi \
 --conf spark.executor.instances=2 \
 --conf spark.kubernetes.container.image=registry-vpc.us-east-1.aliyuncs.com/spark:3.0.0 \
 local:///opt/spark/examples/jars/spark-examples_2.12-3.0.0-preview.jar
@@ -100,12 +100,13 @@ spark 启动参数的local://后面应该跟你自己的spark application在容�
 1. spark访问OSS,作为输入输出
 2. spark on k8s应用资源控制,环境依赖解决
 3. spark on k8s存储挂载
-4. . spark applications UI统一代理
-5.  spark多租户和资源隔离
+4. spark applications UI统一代理
+5. spark多租户和资源隔离
 6. spark cluster autoscaling
 7. spark on k8s ,spark operator, spark standalone on k8s的方式抉择
 https://marsishandsome.github.io/2018/04/Kubernetes_4
-参考:
+
+## 参考:
 TalkingData: https://zhuanlan.zhihu.com/p/66717311
 https://xiaoxubeii.github.io/articles/practice-of-spark-on-kubernetes/
 代码解析:  https://duyanghao.github.io/Spark-on-k8s-executor-creation/
