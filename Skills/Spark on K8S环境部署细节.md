@@ -173,7 +173,11 @@ tar -xzvf spark-3.0.0-preview-bin-hadoop2.7.tgz
 这里我们使用aliyun的[容器镜像服务](https://help.aliyun.com/product/60716.html?spm=a2c4g.11186623.3.1.655c2b660ggf4E)
 1. docker登录镜像服务
 ``` bash
-docker login --username=lanrish@1416336129779449 registry.us-east-1.aliyuncs.com
+docker login --username=lanrish@1416336129779449 
+
+![Diagram](./attachments/1582627155189.drawio.html)
+
+registry.us-east-1.aliyuncs.com
 ```
 **注:**
  - 登录建议使用docker[免sudo的方式](https://www.cnblogs.com/sddai/p/10426900.html)登录,否则执行`sudo docker login`登录之后,当前用户无法创建镜像.
