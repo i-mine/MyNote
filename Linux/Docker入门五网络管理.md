@@ -36,7 +36,6 @@ docker0默认网段是192.168.0.0/20
 创建多个容器,会自动分配该网段下的ip, 各个容器可以使用内网ip直接相互通信.
 ==需要注意的是,对于默认的bridge每次重启容器,容器的IP地址都是会发生变化的.==
 Docker bridge使用端口的方式为设置端口映射,只是通过`iptables`实现的.
-
 iptables图文详解:https://www.zsythink.net/archives/1199
 iptables增删改查:http://www.zsythink.net/archives/1517
 #### iptables nat表
