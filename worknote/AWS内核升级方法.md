@@ -1,6 +1,6 @@
 ---
 title: AWS内核升级方法
-tags: dataplatform,mobvista
+tags: dataplatform
 grammar_cjkRuby: true
 ---
 time: `2020-4-9 `
